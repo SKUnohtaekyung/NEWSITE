@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<!-- 로그인 화면 -->
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<!-- 로그인 화면 (정적 변환됨) -->
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
@@ -21,11 +21,10 @@
     </div>
 
     <header class="max-w-5xl mx-auto px-6 pt-8 flex items-center justify-between relative z-10">
-        <a href="/" class="text-2xl font-black tracking-tight">TK</a>
+        <a href="index.html" class="text-2xl font-black tracking-tight">TK</a>
         <div class="flex items-center gap-3 text-sm">
-            <a href="/member_login"
-                class="whitespace-nowrap text-slate-200 hover:text-sky-200 transition-colors">로그인</a>
-            <a href="/join_new"
+            <a href="login.html" class="whitespace-nowrap text-slate-200 hover:text-sky-200 transition-colors">로그인</a>
+            <a href="join_new.html"
                 class="whitespace-nowrap bg-sky-500 text-white font-semibold py-2 px-4 rounded-full shadow-lg shadow-sky-500/30 hover:bg-sky-400 transition">회원가입</a>
         </div>
     </header>
@@ -53,17 +52,14 @@
                         <p class="text-slate-500 text-sm">Sign in</p>
                         <h2 class="text-2xl font-bold whitespace-nowrap">로그인</h2>
                     </div>
-                    <a href="/join_new" class="text-sm text-sky-600 hover:text-sky-500 font-medium">아직 계정이 없나요?</a>
+                    <a href="join_new.html" class="text-sm text-sky-600 hover:text-sky-500 font-medium">아직 계정이 없나요?</a>
                 </div>
 
-                <!-- 로그인 실패 시 에러 메시지 출력 -->
-                <div th:if="${errorMessage}" class="mb-4 rounded-xl bg-red-50 text-red-700 px-4 py-3 text-sm"
-                    th:text="${errorMessage}"></div>
-
-                <form th:action="@{/api/login_check}" method="post" class="space-y-4">
+                <form action="#" method="post" class="space-y-4"
+                    onsubmit="alert('정적 사이트에서는 로그인 기능을 사용할 수 없습니다.'); return false;">
                     <div>
                         <label class="text-sm text-slate-600 font-semibold">이메일</label>
-                        <input type="email" name="email" th:value="${email}" required
+                        <input type="email" name="email" required
                             class="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:outline-none">
                     </div>
                     <div>

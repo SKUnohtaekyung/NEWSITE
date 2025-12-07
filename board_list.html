@@ -1,88 +1,263 @@
 <!DOCTYPE html>
-<!-- 게시판 글 목록 페이지 (기본 UI) -->
-<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<!-- 게시판 글 목록 및 검색, 작성 페이지 (정적 변환됨) -->
+<html lang="ko">
 
 <head>
-  <meta charset="UTF-8">
-  <title>Board List</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Archive | Board</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <style>
+        :root {
+            --bg-light-start: #f7fbff;
+            --bg-light-end: #eef2ff;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --accent-cyan: #0ea5e9;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: #e5e7eb;
+            --shadow-color: rgba(59, 130, 246, 0.25);
+            --glow-color: rgba(14, 165, 233, 0.22);
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.12), transparent 30%),
+                radial-gradient(circle at 80% 0%, rgba(99, 102, 241, 0.12), transparent 35%),
+                linear-gradient(135deg, var(--bg-light-start), var(--bg-light-end));
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: box-shadow .25s ease;
+            box-shadow: 0 20px 55px -30px var(--shadow-color), 0 10px 30px -20px rgba(15, 23, 42, 0.35);
+        }
+
+        .glass-card:hover {
+            box-shadow: 0 28px 70px -36px var(--shadow-color), 0 12px 32px -18px rgba(15, 23, 42, 0.3);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, .75);
+            border: 1px solid var(--card-border);
+            transition: all .2s ease-in-out;
+            color: var(--text-primary);
+        }
+
+        .glass-input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
+            background: #fff;
+        }
+
+        /* Pagination - match glassmorphic cards but with bolder, clearer pills */
+        .pagination-shell {
+            gap: .75rem;
+        }
+
+        .pagination-pill {
+            min-width: 44px;
+            padding: 0.65rem 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.01em;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--card-border);
+            border-radius: 9999px;
+            box-shadow: 0 12px 32px -24px rgba(15, 23, 42, 0.45), 0 8px 24px -18px var(--shadow-color);
+            transition: transform .15s ease, box-shadow .2s ease, color .15s ease, border-color .15s ease, background-color .15s ease;
+        }
+
+        .pagination-pill:hover {
+            color: var(--accent-cyan);
+            border-color: rgba(14, 165, 233, 0.65);
+            box-shadow: 0 14px 34px -24px rgba(15, 23, 42, 0.5), 0 10px 26px -18px rgba(14, 165, 233, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .pagination-pill.active {
+            color: #fff;
+            border-color: transparent;
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            box-shadow: 0 15px 35px -22px rgba(14, 165, 233, 0.6), 0 0 0 4px rgba(14, 165, 233, 0.18);
+            transform: translateY(-2px);
+        }
+
+        .pagination-pill.disabled {
+            opacity: .45;
+            cursor: not-allowed;
+            pointer-events: none;
+            color: var(--text-secondary);
+        }
+    </style>
 </head>
 
-<body>
-  <h1>Board List</h1>
+<body class="antialiased">
+    <div class="relative z-10 min-h-screen p-4 sm:p-6 lg:p-10">
+        <header class="max-w-7xl mx-auto mb-8 md:mb-10 flex items-center justify-between">
+            <div>
+                <p class="text-xs uppercase tracking-[0.35em] text-sky-500">The Archive</p>
+                <h1
+                    class="text-3xl md:text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-sky-700 to-sky-500">
+                    BOARD</h1>
+                <p class="text-sm text-slate-500 mt-2">팀 업데이트와 학습 기록을 남기는 공간입니다.</p>
+            </div>
+            <a href="index.html#board"
+                class="text-sm font-bold transition-all duration-300 text-slate-800 flex items-center gap-2 px-4 py-2 rounded-lg bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-sky-300 hover:text-sky-700">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span class="hidden md:inline">Back to Main</span>
+            </a>
+        </header>
 
-  <!-- 검색 폼 -->
-  <section>
-    <form th:action="@{/board_list}" method="get">
-      <!-- 타임리프(th:value)로 검색어 유지 -->
-      <input type="text" name="keyword" placeholder="검색어" th:value="${keyword}" />
-      <button type="submit">검색</button>
-    </form>
-  </section>
+        <div class="max-w-7xl mx-auto lg:grid lg:grid-cols-3 lg:gap-10">
+            <aside class="lg:col-span-1 lg:sticky lg:top-10 space-y-6 pb-6">
+                <section class="mb-0">
+                    <div class="glass-card rounded-2xl p-6">
+                        <h2 class="text-xl font-bold mb-5 flex items-center gap-3">
+                            <i class="fa-solid fa-magnifying-glass text-cyan-400"></i> 검색
+                        </h2>
+                        <form action="#" class="flex gap-3" onsubmit="alert('정적 사이트에서는 검색이 불가능합니다.'); return false;">
+                            <input type="text" name="keyword" placeholder="검색어를 입력하세요"
+                                class="glass-input w-full rounded-lg px-4 py-2.5 text-slate-800 placeholder:text-slate-500" />
+                            <button type="submit"
+                                class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-4 rounded-lg flex items-center justify-center"
+                                aria-label="검색">
+                                <i class="fa-solid fa-magnifying-glass text-white"></i>
+                            </button>
+                        </form>
+                    </div>
+                </section>
+                <section class="mb-0">
+                    <div class="glass-card rounded-2xl p-6">
+                        <h2 class="text-xl font-bold mb-5 flex items-center gap-3">
+                            <i class="fa-solid fa-pen-nib text-cyan-400"></i> 글 작성
+                        </h2>
+                        <!-- 로그인 상태가 아님을 가정 -->
+                        <div
+                            class="rounded-lg border border-slate-200 bg-sky-50 px-4 py-3 text-sm text-center text-sky-800">
+                            <a href="login.html" class="block w-full text-sky-700 font-semibold">로그인 / 회원가입</a>
+                        </div>
+                    </div>
+                </section>
+            </aside>
 
-  <section>
-    <h2>Add Board</h2>
-    <form th:action="@{/api/boards}" method="post">
-      <div>
-        <input type="text" name="title" placeholder="title" required />
-      </div>
-      <div>
-        <input type="text" name="user" placeholder="user" required />
-      </div>
-      <div>
-        <input type="text" name="newdate" placeholder="newdate" required />
-      </div>
-      <div>
-        <input type="text" name="count" placeholder="count" required />
-      </div>
-      <div>
-        <input type="text" name="likec" placeholder="likec" required />
-      </div>
-      <div>
-        <textarea name="content" placeholder="content" rows="6" required></textarea>
-      </div>
-      <button type="submit">Add</button>
-    </form>
-  </section>
+            <main class="lg:col-span-2 space-y-6 pb-6">
+                <section>
+                    <div id="article-list" class="space-y-6">
+                        <!-- 정적 게시글 1 -->
+                        <article id="article-1" class="glass-card rounded-2xl p-6 md:p-8">
+                            <h2 class="text-2xl font-bold mb-3">첫 번째 게시글 제목 예시입니다.</h2>
+                            <p class="text-text-secondary leading-relaxed mb-6 whitespace-pre-wrap">이곳에 게시글 내용이 들어갑니다.
+                                정적 사이트에서 보여지는 예시 데이터입니다.</p>
+                            <div class="flex justify-between items-center text-sm text-slate-400 mb-4">
+                                <span>User1</span>
+                                <span>2025-12-07 10:00</span>
+                            </div>
+                            <div class="flex justify-end items-center gap-3 pt-4 border-t border-slate-200">
+                                <button data-id="1" data-title="첫 번째 게시글 제목 예시입니다."
+                                    data-content="이곳에 게시글 내용이 들어갑니다. 정적 사이트에서 보여지는 예시 데이터입니다."
+                                    class="view-btn text-sm text-slate-800 bg-white hover:bg-sky-50 border border-slate-200 hover:border-sky-300 rounded-lg px-4 py-2 font-semibold transition-colors flex items-center gap-2"><i
+                                        class="fa-solid fa-eye"></i> 보기</button>
+                            </div>
+                        </article>
 
-  <section>
-    <h2>Boards</h2>
-    <div th:if="${#lists.isEmpty(boards.content)}">No boards</div>
-    <ul>
-      <!-- 게시글 목록 반복 출력 (th:each) -->
-      <li th:each="board : ${boards.content}">
-        <!-- 상세 보기 링크 생성 (th:href) -->
-        <a th:href="@{/board_view/{id}(id=${board.id})}" th:text="${board.title}">title</a>
-        <span> - </span>
-        <span th:text="${board.user}">user</span>
-      </li>
-    </ul>
-  </section>
+                        <!-- 정적 게시글 2 -->
+                        <article id="article-2" class="glass-card rounded-2xl p-6 md:p-8">
+                            <h2 class="text-2xl font-bold mb-3">두 번째 게시글입니다. 정적 사이트 공지사항.</h2>
+                            <p class="text-text-secondary leading-relaxed mb-6 whitespace-pre-wrap">정적 호스팅 환경에서는 데이터베이스
+                                기능을 사용할 수 없어 예시 데이터만 표시됩니다.</p>
+                            <div class="flex justify-between items-center text-sm text-slate-400 mb-4">
+                                <span>Admin</span>
+                                <span>2025-12-07 12:00</span>
+                            </div>
+                            <div class="flex justify-end items-center gap-3 pt-4 border-t border-slate-200">
+                                <button data-id="2" data-title="두 번째 게시글입니다. 정적 사이트 공지사항."
+                                    data-content="정적 호스팅 환경에서는 데이터베이스 기능을 사용할 수 없어 예시 데이터만 표시됩니다."
+                                    class="view-btn text-sm text-slate-800 bg-white hover:bg-sky-50 border border-slate-200 hover:border-sky-300 rounded-lg px-4 py-2 font-semibold transition-colors flex items-center gap-2"><i
+                                        class="fa-solid fa-eye"></i> 보기</button>
+                            </div>
+                        </article>
 
-  <!-- 페이지네이션 -->
-  <section>
-    <ul>
-      <li>
-        <a th:href="@{/board_list(page=${currentPage - 1}, keyword=${keyword})}"
-          th:classappend="${currentPage == 0} ? 'disabled'">
-          이전
-        </a>
-      </li>
-      <!-- 페이지 번호 시퀀스 생성 및 반복 (th:each) -->
-      <li th:if="${totalPages > 0}" th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-        <a th:href="@{/board_list(page=${i}, keyword=${keyword})}" th:text="${i + 1}"
-          th:classappend="${i == currentPage} ? 'active'">1</a>
-      </li>
-      <li>
-        <a th:href="@{/board_list(page=${currentPage + 1}, keyword=${keyword})}"
-          th:classappend="${currentPage + 1 >= totalPages} ? 'disabled'">
-          다음
-        </a>
-      </li>
-    </ul>
-  </section>
+                        <!-- 정적 게시글 3 -->
+                        <article id="article-3" class="glass-card rounded-2xl p-6 md:p-8">
+                            <h2 class="text-2xl font-bold mb-3">반갑습니다! 여기서 포트폴리오를 확인하세요.</h2>
+                            <p class="text-text-secondary leading-relaxed mb-6 whitespace-pre-wrap">포트폴리오 프로젝트 게시판입니다.
+                                자유롭게 둘러보세요.</p>
+                            <div class="flex justify-between items-center text-sm text-slate-400 mb-4">
+                                <span>TaeKyung</span>
+                                <span>2025-12-07 14:00</span>
+                            </div>
+                            <div class="flex justify-end items-center gap-3 pt-4 border-t border-slate-200">
+                                <button data-id="3" data-title="반갑습니다! 여기서 포트폴리오를 확인하세요."
+                                    data-content="포트폴리오 프로젝트 게시판입니다. 자유롭게 둘러보세요."
+                                    class="view-btn text-sm text-slate-800 bg-white hover:bg-sky-50 border border-slate-200 hover:border-sky-300 rounded-lg px-4 py-2 font-semibold transition-colors flex items-center gap-2"><i
+                                        class="fa-solid fa-eye"></i> 보기</button>
+                            </div>
+                        </article>
+                    </div>
+                </section>
 
-  <p><a th:href="@{/}">Home</a></p>
+                <section class="mt-8">
+                    <div class="glass-card rounded-2xl p-4 flex flex-wrap items-center justify-center pagination-shell">
+                        <span class="pagination-pill disabled">이전</span>
+                        <a href="#" class="pagination-pill active">1</a>
+                        <span class="pagination-pill disabled">다음</span>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- 보기 모달 -->
+    <div id="view-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="glass-card rounded-2xl p-6 md:p-8 w-full max-w-2xl relative">
+            <button id="view-modal-close" class="absolute top-3 right-3 text-white/80 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 id="view-modal-title" class="text-2xl font-bold mb-4"></h3>
+            <div id="view-modal-content" class="text-text-secondary whitespace-pre-wrap"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 보기 모달 로직 (정적 데이터 사용)
+            const modal = document.getElementById('view-modal');
+            const modalTitle = document.getElementById('view-modal-title');
+            const modalContent = document.getElementById('view-modal-content');
+
+            document.getElementById('view-modal-close')?.addEventListener('click', () => { modal.classList.add('hidden'); modal.classList.remove('flex'); });
+            modal?.addEventListener('click', (e) => { if (e.target === modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); } });
+
+            document.getElementById('article-list')?.addEventListener('click', (e) => {
+                const viewBtn = e.target.closest('.view-btn');
+                if (viewBtn) {
+                    const title = viewBtn.dataset.title;
+                    const content = viewBtn.dataset.content;
+
+                    if (title && content) {
+                        modalTitle.textContent = title;
+                        modalContent.textContent = content;
+                        modal.classList.remove('hidden');
+                        modal.classList.add('flex');
+                    }
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

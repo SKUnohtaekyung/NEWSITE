@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 기술 스택 및 상세 소개 페이지 -->
+<!-- 기술 스택 및 상세 소개 페이지 (정적 변환됨) -->
 <html lang="ko">
 
 <head>
@@ -15,7 +15,6 @@
             --text-primary: #F5F5F5;
             --text-secondary: #A1A1AA;
             --accent-blue: #27d4ff;
-            /* 레퍼런스 이미지에 맞춰 덜 밝은 파란색으로 수정 */
             --card-bg: rgba(20, 20, 20, 0.6);
             --card-border: rgba(255, 255, 255, 0.08);
         }
@@ -32,7 +31,6 @@
             position: relative;
         }
 
-        /* 배경 효과 강화 */
         body::before {
             content: '';
             position: fixed;
@@ -44,9 +42,7 @@
             z-index: -1;
             background: radial-gradient(circle, var(--accent-blue), transparent 50%);
             filter: blur(100px);
-            /* 블러 효과 강화 */
             opacity: 0.2;
-            /* 가시성 향상 */
             transform: translateX(-50%);
             animation: subtle-glow 20s ease-in-out infinite alternate;
         }
@@ -61,7 +57,6 @@
             }
         }
 
-        /* 배경 텍스트 레이어 */
         .background-text {
             position: absolute;
             top: 40%;
@@ -76,7 +71,6 @@
             z-index: 0;
         }
 
-        /* 카드 스타일 */
         .skill-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -90,17 +84,14 @@
             box-shadow: 0 20px 30px rgba(0, 0, 0, 0.25);
         }
 
-        /* 커스텀 텍스트 스타일 */
         .main-title {
             font-size: clamp(3rem, 8vw, 6rem);
             font-weight: 900;
             line-height: 1.1;
-            /* 그라데이션 텍스트 */
             background: linear-gradient(90deg, var(--text-primary) 50%, var(--accent-blue) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             color: var(--text-primary);
-            /* 대체 색상 */
         }
 
         .card-icon {
@@ -132,8 +123,8 @@
 
     <div class="relative z-10 min-h-screen p-6 sm:p-8 lg:p-12">
         <header class="flex justify-between items-center mb-24 md:mb-32">
-            <a href="/" class="text-xl font-bold transition-colors hover:text-sky-400">Noh TaeKyung</a>
-            <a href="/#skills"
+            <a href="index.html" class="text-xl font-bold transition-colors hover:text-sky-400">Noh TaeKyung</a>
+            <a href="index.html#skills"
                 class="text-sm font-semibold text-gray-400 transition-colors hover:text-white flex items-center gap-2">
                 <i class="fa-solid fa-arrow-left"></i>
                 Back to Main
@@ -142,20 +133,16 @@
 
         <main class="container mx-auto max-w-7xl">
             <section id="skill-details" class="relative text-center">
-                <!-- 배경 텍스트 레이어 -->
                 <div class="background-text">SKILLS</div>
 
-                <!-- 콘텐츠 레이어 -->
                 <div class="relative z-10">
                     <h1 class="main-title mb-8">Skills & Tools.</h1>
                     <p class="card-text max-w-3xl mx-auto mb-20 md:mb-24">
                         프로젝트를 통해 갈고닦은 기술 스택과 디자인 툴에 대한 저의 경험과 생각을 정리했습니다.
                     </p>
 
-                    <!-- 스킬 그리드 -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
 
-                        <!-- React 카드 -->
                         <div class="skill-card rounded-2xl p-8">
                             <div class="card-icon text-blue-500"><i class="fa-brands fa-react"></i></div>
                             <h2 class="card-title text-primary mb-3">REACT</h2>
@@ -165,7 +152,6 @@
                             </p>
                         </div>
 
-                        <!-- JavaScript 카드 -->
                         <div class="skill-card rounded-2xl p-8">
                             <div class="card-icon text-yellow-400"><i class="fa-brands fa-js"></i></div>
                             <h2 class="card-title text-primary mb-3">JAVASCRIPT</h2>
@@ -175,7 +161,6 @@
                             </p>
                         </div>
 
-                        <!-- TypeScript 카드 -->
                         <div class="skill-card rounded-2xl p-8">
                             <div class="card-icon text-blue-500">
                                 <span class="font-bold text-xl">TS</span>
@@ -187,7 +172,6 @@
                             </p>
                         </div>
 
-                        <!-- Figma 카드 -->
                         <div class="skill-card rounded-2xl p-8">
                             <div class="card-icon text-orange-500"><i class="fa-brands fa-figma"></i></div>
                             <h2 class="card-title text-primary mb-3">FIGMA</h2>
